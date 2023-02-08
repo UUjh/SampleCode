@@ -67,7 +67,6 @@ public class Plants : MonoBehaviour, IPointerClickHandler
         if (!isSaved)
         {
             isSaved = true;
-            //Debug.Log("plantAutoSave");
             StartCoroutine(PlantsAutoSave());
         }
     }
@@ -90,24 +89,14 @@ public class Plants : MonoBehaviour, IPointerClickHandler
             if (slots[i].isSowed)
             {
                 meta1[i].Set("isSowed", true);
-                //Debug.Log("meta1["+ i +"]: " + meta1[i].Get<bool>("isSowed"));
                 meta1[i].Set("seedNum", slots[i].seedNum);
-                //Debug.Log("meta1[" + i + "]: " + meta1[i].Get<int>("seedNum"));
                 meta1[i].Set("time", slots[i].curTime);
-                //Debug.Log("meta1[" + i + "]: " + meta1[i].Get<float>("time"));
-
             }
             else
             {
                 meta1[i].Set("isSowed", false);
-                //Debug.Log("meta1[" + i + "]: " + meta1[i].Get<bool>("isSowed"));
-
                 meta1[i].Set<int>("seedNum", slots[i].seedNum);
-                //Debug.Log("meta1[" + i + "]: " + meta1[i].Get<int>("seedNum"));
-
                 meta1[i].Set("time", slots[i].curTime);
-                //Debug.Log("meta1[" + i + "]: " + meta1[i].Get<float>("time"));
-
             }
         }
         isSaved = false;
