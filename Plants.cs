@@ -17,10 +17,11 @@ public class Plants : MonoBehaviour, IPointerClickHandler
     public BoxCollider2D[] box;
     public PlantSlot[] slots;
 
-    public int seedNum; 
+    public int seedNum;
     public GameObject seedPup;
 
     private bool isPup;
+
 
     public GameObject lockPanel;
 
@@ -36,20 +37,22 @@ public class Plants : MonoBehaviour, IPointerClickHandler
 
     void Start()
     {
+        // 데이터 불러오기
         DataManager.instance.LoadFile();
 
         GetComponent<BoxCollider2D>();
 
         isPup = false;
         seedPup.SetActive(false);
-
-        // 해금 시 panel 제거
+        
         if (DataManager.instance.boilUnlock) Destroy(lockPanel);
+
     }
+
 
     void Update()
     {
-        // 씨앗 심기 팝업
+        // 팝업이 실행 시
         if (isPup)
         {
             var repo = BGRepo.I;
@@ -57,13 +60,12 @@ public class Plants : MonoBehaviour, IPointerClickHandler
             var entity = meta[0];
             var seedKind = entity.Get<List<BGEntity>>("Seed");
 
-            // 씨앗 개수
+            // Database에서 씨앗의 개수를 불러와서 팝업에 표시.
             hub0Txt.text = seedKind[0].Get<int>("count").ToString();
             hub1Txt.text = seedKind[1].Get<int>("count").ToString();
             hub2Txt.text = seedKind[2].Get<int>("count").ToString();
 
         }
-        // 자동 저장
         if (!isSaved)
         {
             isSaved = true;
@@ -71,14 +73,13 @@ public class Plants : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    // 자동저장
     bool isSaved;
     WaitForSeconds secs = new WaitForSeconds(10f);
+    // 10초에 한 번씩 자동으로 식물이 자라는 것을 저장
     IEnumerator PlantsAutoSave()
     {
         yield return secs;
-
-        // BGDatabase 저장
+        isSaved = false;
         var repo = BGRepo.I;
         var meta = repo["PlayData"];
         var entity = meta[0];
@@ -86,24 +87,26 @@ public class Plants : MonoBehaviour, IPointerClickHandler
         var meta1 = entity.Get<List<BGEntity>>("PlantSlot");
         for (int i = 0; i < plantSlot.Length; i++)
         {
+            // 각 식물 슬롯에 심어진 식물의 정보 저장.
             if (slots[i].isSowed)
             {
                 meta1[i].Set("isSowed", true);
                 meta1[i].Set("seedNum", slots[i].seedNum);
                 meta1[i].Set("time", slots[i].curTime);
+
             }
             else
             {
                 meta1[i].Set("isSowed", false);
+
                 meta1[i].Set<int>("seedNum", slots[i].seedNum);
+
                 meta1[i].Set("time", slots[i].curTime);
+
             }
         }
-        isSaved = false;
-
     }
 
-    #region 씨앗 팝업 관리
     public bool IsPup
     {
         get { return isPup; }
@@ -118,16 +121,14 @@ public class Plants : MonoBehaviour, IPointerClickHandler
 
     public int slotNum;
 
+    // 씨앗 팝업
     public void SowPup(int pupNum)
     {
-        Debug.Log("pupNum: " + pupNum);
         slotNum = pupNum;
         seedPup.gameObject.SetActive(true);
         isPup = true;
     }
-    #endregion
 
-    #region 씨앗 심기 기능
     public void SowSeed(int seed)
     {
         slots[slotNum].seedNum = seed;
@@ -137,33 +138,33 @@ public class Plants : MonoBehaviour, IPointerClickHandler
         var entity = meta[0];
         var seedKind = entity.Get<List<BGEntity>>("Seed");
         var meta1 = entity.Get<List<BGEntity>>("PlantSlot");
-
+        
+        // Database에서 씨앗 정보를 불러와서 개수가 0개라면 return
         if (seedKind[slots[slotNum].seedNum].Get<int>("count") < 1)
         {
-            Debug.Log("씨앗 부족");
             return;
         }
         else
         {
+            // 씨앗의 개수가 1개 이상이라면 씨앗을 심음.
             seedKind[slots[slotNum].seedNum].Set<int>("count", seedKind[slots[slotNum].seedNum].Get<int>("count") - 1);
             SoundManager.instance.EffectPlay(SoundManager.instance.sowEffect);
         }
 
+        // 씨앗의 번호에 따라 자라는 시간을 설정
         switch (seedNum)
         {
             case 0:
                 slots[slotNum].growTime = 20;
-                slots[slotNum].slider.maxValue = slots[slotNum].growTime;
                 break;
             case 1:
                 slots[slotNum].growTime = 30;
-                slots[slotNum].slider.maxValue = slots[slotNum].growTime;
                 break;
             case 2:
                 slots[slotNum].growTime = 40;
-                slots[slotNum].slider.maxValue = slots[slotNum].growTime;
                 break;
         }
+
 
         slots[slotNum].isSowed = true;
         meta1[slotNum].Set("isSowed", true);
@@ -180,12 +181,9 @@ public class Plants : MonoBehaviour, IPointerClickHandler
         DataManager.instance.SaveFile();
 
     }
-    #endregion
 
-    #region 씨앗 저장
     public void PlantsSave()
     {
-        Debug.Log("PlantsSave()");
         var repo = BGRepo.I;
         var meta = repo["PlayData"];
         var entity = meta[0];
@@ -208,12 +206,10 @@ public class Plants : MonoBehaviour, IPointerClickHandler
             }
         }
     }
-    #endregion
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log("PlantsOnPointClick");
-
+        // 팝업이 열려있다면, 팝업이 아닌 다른 곳을 클릭했을 때 팝업을 닫음.
         if (isPup) { ClosePup(); }
     }
 }

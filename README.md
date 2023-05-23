@@ -10,8 +10,6 @@ Box Collider를 각 PlantSlot에 넣었으며, 터치된 PlantSlot에 선택한 
 
 PlantSlot.cs는 식물의 데이터를 Plant에 넘겨주며, 식물의 상태에 따라 Sprite를 관리합니다.
 
-Beaker.cs과 Pot은 포션을 제작하는 과정입니다.
-Beaker는 기다리는 시간 없이 조합만으로 바로 원하는 포션을 만들 수 있으며,
-Pot은 제작 시간이 필요합니다. 
-
+Beaker.cs 포션을 제작하는 과정입니다.
+Beaker는 기다리는 시간 없이 조합만으로 바로 원하는 포션을 만들 수 있습니다.
 간단한 주석으로 설명을 달아놨습니다.

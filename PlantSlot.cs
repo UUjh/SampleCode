@@ -13,8 +13,6 @@ public class PlantSlot : MonoBehaviour, IPointerClickHandler
 {
     public static PlantSlot instance;
 
-    public Slider slider;
-
     public bool isSowed;
     public bool isAdult;
     public int seedNum = -1;
@@ -33,8 +31,6 @@ public class PlantSlot : MonoBehaviour, IPointerClickHandler
     void Start()
     {
         icon.color = Color.white;
-        slider.gameObject.SetActive(false);
-
     }
 
     void Update()
@@ -44,15 +40,11 @@ public class PlantSlot : MonoBehaviour, IPointerClickHandler
         // 식물이 자라는 과정
         if (isSowed && !isAdult)
         {
-            slider.gameObject.SetActive(true);
-            slider.maxValue = growTime;
-            slider.value = curTime;
             GrowingHub();
         }
-        // 식물이 다 자라면 슬라이더 제거
+        // 식물이 다 자랐을 때
         if (curTime > growTime)
         {
-            slider.gameObject.SetActive(false);
             AdultHub();
         }
     }
@@ -67,22 +59,18 @@ public class PlantSlot : MonoBehaviour, IPointerClickHandler
             case 0:
                 if (curTime < growTime / 3)
                 {
-                    //Debug.Log("1/4");
                     icon.sprite = ExtendFunction.ins.HubSpriteReturn("Hub_Soil_Water");
                 }
                 else if (curTime < growTime * 0.66)
                 {
-                    //Debug.Log("2/4");
                     icon.sprite = ExtendFunction.ins.HubSpriteReturn("Hub_Plant01_01");
                 }
                 else if (curTime < growTime)
                 {
-                    //Debug.Log("3/4");
                     icon.sprite = ExtendFunction.ins.HubSpriteReturn("Hub_Plant01_02");
                 }
                 else
                 {
-                    //Debug.Log("Adult");
                     icon.sprite = ExtendFunction.ins.HubSpriteReturn("Hub_Plant01_Final");
                 }
                 break;
@@ -90,22 +78,18 @@ public class PlantSlot : MonoBehaviour, IPointerClickHandler
             case 1:
                 if (curTime < growTime / 3)
                 {
-                    //Debug.Log("1/3");
                     icon.sprite = ExtendFunction.ins.HubSpriteReturn("Hub_Soil_Water");
                 }
                 else if (curTime < growTime * 0.66)
                 {
-                    //Debug.Log("2/3");
                     icon.sprite = ExtendFunction.ins.HubSpriteReturn("Hub_Plant02_01");
                 }
                 else if (curTime < growTime)
                 {
-                    //Debug.Log("3/3");
                     icon.sprite = ExtendFunction.ins.HubSpriteReturn("Hub_Plant02_02");
                 }
                 else
                 {
-                    //Debug.Log("Adult");
                     icon.sprite = ExtendFunction.ins.HubSpriteReturn("Hub_Plant02_Final");
                 }
                 break;
@@ -113,22 +97,18 @@ public class PlantSlot : MonoBehaviour, IPointerClickHandler
             case 2:
                 if (curTime < growTime / 3)
                 {
-                    //Debug.Log("1/3");
                     icon.sprite = ExtendFunction.ins.HubSpriteReturn("Hub_Soil_Water");
                 }
                 else if (curTime < growTime * 0.66)
                 {
-                    //Debug.Log("2/4");
                     icon.sprite = ExtendFunction.ins.HubSpriteReturn("Hub_Plant03_01");
                 }
                 else if (curTime < growTime)
                 {
-                    //Debug.Log("3/4");
                     icon.sprite = ExtendFunction.ins.HubSpriteReturn("Hub_Plant03_02");
                 }
                 else
                 {
-                    //Debug.Log("Adult");
                     icon.sprite = ExtendFunction.ins.HubSpriteReturn("Hub_Plant03_Final");
                 }
                 break;
@@ -145,6 +125,7 @@ public class PlantSlot : MonoBehaviour, IPointerClickHandler
         isAdult = true;
     }
 
+    // 식물 수확
     public void GetHub()
     {
         Debug.Log("GetHUb()");
@@ -162,27 +143,21 @@ public class PlantSlot : MonoBehaviour, IPointerClickHandler
 
     #endregion
 
-
-
     #region 슬롯 관리
-    public int myPupNum;
 
+    // 인스펙터에서 myPupNum을 설정해서 각 슬롯의 번호를 설정.
+    public int myPupNum;
     public void OnPointerClick(PointerEventData eventData)
     {
-        //Debug.Log("IsPup: " + Plants.instance.IsPup);
-
-        // 팝업 열려있으면 닫기
         if (Plants.instance.IsPup)
         {
             Plants.instance.ClosePup();
             return;
         }
-        // 식물이 안 심어진 상태면 팝업 열기
         if (!isSowed)
         {
             Plants.instance.SowPup(myPupNum);
         }
-        // 식물이 다 자라면 식물 수확
         if (isAdult) GetHub();
     }
     #endregion
